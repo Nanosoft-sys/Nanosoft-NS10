@@ -1,46 +1,90 @@
 :root {
-    --win-bg: rgba(20, 20, 20, 0.95);
+    --win-bg: rgba(10, 10, 10, 0.96);
     --ns-blue: #0078d7;
+    --glass-bright: rgba(255, 255, 255, 0.05);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { width: 100vw; height: 100vh; overflow: hidden; font-family: 'Outfit', sans-serif; background: #000; color: white; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+body, html { width: 100%; height: 100%; overflow: hidden; font-family: 'Outfit', sans-serif; background: #000; color: white; -webkit-text-size-adjust: 100%; }
 
 #desktop { width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&w=2000') center/cover; position: relative; }
 
-/* Windows */
-.window { position: absolute; width: 600px; height: 450px; background: var(--win-bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: none; flex-direction: column; z-index: 100; backdrop-filter: blur(20px); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-.win-header { padding: 10px 15px; background: rgba(255,255,255,0.05); display: flex; justify-content: space-between; cursor: move; border-radius: 8px 8px 0 0; }
-.win-dot { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; margin-left: 5px; }
+/* Skrivbordsikoner (Fixad positionering) */
+.desktop-layer { position: absolute; left: 0; top: 0; padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 5; }
+.d-icon { width: 75px; text-align: center; cursor: pointer; transition: 0.2s; user-select: none; }
+.d-icon:active { transform: scale(0.95); }
+.d-visual { font-size: 2.2rem; margin-bottom: 5px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+.d-icon span { font-size: 0.7rem; text-shadow: 0 2px 4px #000; display: block; }
+
+/* Fönster (Robustare och Flyttbara) */
+.window {
+    position: absolute; width: 350px; height: 380px; /* Standardstorlek för mobil */
+    background: var(--win-bg); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; display: none; flex-direction: column;
+    z-index: 100; backdrop-filter: blur(25px);
+    box-shadow: 0 30px 70px rgba(0,0,0,0.6);
+}
+.window.open { display: flex; }
+.window.minimized { display: none !important; }
+
+.win-header {
+    padding: 10px 15px; background: rgba(255,255,255,0.03);
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: move; border-radius: 12px 12px 0 0;
+    user-select: none; touch-action: none;
+}
+.win-controls { display: flex; gap: 8px; align-items: center; }
+.win-dot { width: 12px; height: 12px; border-radius: 50%; border: none; cursor: pointer; }
 .dot-close { background: #ff5f56; }
 .dot-min { background: #febc2e; }
 
-/* Startmeny Windows 10 Style */
+/* Startmeny Windows 10 Style (Helt darrfri fix) */
 .win10-menu {
-    position: absolute; bottom: -700px; left: 0; width: 650px; height: 500px;
-    background: rgba(15, 15, 15, 0.98); backdrop-filter: blur(30px);
-    display: flex; transition: 0.3s cubic-bezier(0, 1, 0.5, 1); z-index: 9999;
-    border: 1px solid rgba(255,255,255,0.1);
+    position: absolute; bottom: -700px; left: 0; width: 100vw; height: 100vh; /* All out på mobilen */
+    background: rgba(10, 10, 10, 0.99); backdrop-filter: blur(40px);
+    display: flex; transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    z-index: 9999; border-top: 1px solid rgba(255,255,255,0.1);
+    transform: translateY(100%);
 }
-.win10-menu.show { bottom: 50px; }
+.win10-menu.show { bottom: 0px; transform: translateY(0); }
 
-.menu-sidebar { width: 50px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; background: rgba(0,0,0,0.3); }
-.side-icon { height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; }
+.menu-sidebar { width: 50px; display: flex; flex-direction: column; justify-content: space-between; padding: 10px 0; background: rgba(0,0,0,0.3); border-right: 1px solid rgba(255,255,255,0.05); }
+.side-icon { height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; color: rgba(255,255,255,0.6); }
+.side-icon:active { color: white; background: rgba(255,255,255,0.1); }
 
-.menu-apps { width: 250px; padding: 20px; overflow-y: auto; }
-.menu-section-title { font-size: 0.7rem; color: #888; margin-bottom: 15px; text-transform: uppercase; }
-.menu-app-item { padding: 10px; font-size: 0.9rem; cursor: pointer; }
-.menu-app-item:hover { background: rgba(255,255,255,0.1); }
+.menu-body { flex: 1; display: flex; }
+.menu-apps { width: 45%; padding: 20px; border-right: 1px solid rgba(255,255,255,0.05); overflow-y: auto; }
+.menu-section-title { font-size: 0.65rem; color: var(--ns-blue); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+.menu-app-item { padding: 12px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 6px; display: flex; align-items: center; }
+.menu-app-item:active { background: rgba(255,255,255,0.05); }
 
-.menu-tiles { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 100px; gap: 10px; background: rgba(0,0,0,0.1); }
-.tile { background: var(--ns-blue); padding: 10px; position: relative; cursor: pointer; transition: 0.2s; }
-.tile:hover { transform: scale(0.98); filter: brightness(1.2); }
-.weather-tile { grid-column: span 2; grid-row: span 1; background: #2c3e50; }
-.news-tile { grid-column: span 2; grid-row: span 1; background: #c0392b; }
-.tile-label { position: absolute; bottom: 5px; left: 10px; font-size: 0.6rem; }
+.menu-tiles { flex: 1; padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: minmax(70px, auto); gap: 8px; background: rgba(0,0,0,0.1); }
+.tile { background: var(--ns-blue); padding: 10px; cursor: pointer; border-radius: 4px; position: relative; }
+.tile:active { transform: scale(0.97); filter: brightness(1.1); }
+.weather-tile { grid-column: span 2; background: #1e3a5f; display: flex; flex-direction: column; justify-content: space-between; }
+.small-tile { grid-column: span 1; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
 
 /* Taskbar */
-.taskbar { position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.9); display: flex; align-items: center; padding: 0 10px; z-index: 10000; }
-.start-btn { width: 40px; height: 40px; background: var(--ns-blue); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+.taskbar { position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.92); border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px); display: flex; align-items: center; padding: 0 10px; z-index: 10000; }
+.start-btn { width: 38px; height: 38px; background: var(--ns-blue); cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; box-shadow: 0 0 10px rgba(0,120,215,0.3); border-radius: 4px; }
+.start-btn:active { transform: scale(0.95); }
 
-.explorer-grid { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; }
+#active-apps { flex: 1; display: flex; justify-content: center; gap: 8px; overflow: hidden; margin: 0 10px; }
+.app-pill { width: 38px; height: 38px; background: rgba(255,255,255,0.06); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: 0.2s; }
+.app-pill.active { border-bottom: 3px solid var(--ns-blue); background: rgba(255,255,255,0.1); }
+
+.tray { font-size: 0.7rem; text-align: right; min-width: 80px; opacity: 0.7; user-select: none; }
+
+/* Filutforskare Innehåll */
+.explorer-nav { padding: 10px; background: rgba(0,0,0,0.1); display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.nav-btn { padding: 4px 10px; background: var(--glass-bright); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.7rem; }
+.nav-btn:active { background: rgba(255,255,255,0.1); }
+.explorer-grid { flex: 1; padding: 15px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; overflow-y: auto; }
+
+/* ---- MOBILE MEDIA QUERIES (FULL FIX) ---- */
+@media (max-width: 500px) {
+    .window { width: calc(100vw - 30px); left: 15px !important; top: 30px !important; height: calc(100vh - 100px); }
+    .explorer-grid { grid-template-columns: repeat(2, 1fr); }
+    .side-bottom .side-icon { height: 40px; }
+    .menu-sidebar { width: 45px; }
+}
