@@ -4,44 +4,31 @@ let pathHistory = ['root'];
 const fs = {
     'root': [
         { name: 'System (C:)', icon: '💽', target: 'c' },
-        { name: 'Floppy (A:)', icon: '💾', target: 'root' },
-        { name: 'Mina Bilder', icon: '🖼️', target: 'docs' }
+        { name: 'Dokument', icon: '📂', target: 'docs' }
     ],
     'c': [
         { name: 'Windows', icon: '📁', target: 'win' },
-        { name: 'Användare', icon: '📁', target: 'users' },
-        { name: 'hemligt.txt', icon: '📄', target: 'file' }
+        { name: 'Users', icon: '📁', target: 'users' }
     ],
     'docs': [
-        { name: 'projekt.exe', icon: '🎮', target: 'root' },
-        { name: 'log.log', icon: '📄', target: 'root' }
-    ],
-    'win': [{ name: 'System32', icon: '📁', target: 'root' }],
-    'users': [{ name: 'Användare', icon: '👤', target: 'root' }],
-    'file': [] // Tomma mappar
+        { name: 'hemligt.txt', icon: '📄', target: 'root' }
+    ]
 };
 
-// --- WINDOW LOGIC ---
 function openApp(id, icon) {
     const win = document.getElementById('win-' + id);
-    const menus = document.querySelectorAll('.popup-menu, #start-menu');
-    menus.forEach(m => m.classList.remove('show')); // Stäng menyer
-
+    win.style.display = 'flex';
+    document.getElementById('start-menu').classList.remove('show');
     if (!openApps.has(id)) {
-        win.style.display = 'flex';
         openApps.add(id);
-        
         const container = document.getElementById('active-apps');
         const pill = document.createElement('div');
-        pill.className = 'app-pill active';
+        pill.className = 'app-pill';
         pill.id = 'pill-' + id;
-        pill.innerHTML = `<span>${icon}</span>`;
-        pill.onclick = () => toggleMin(id);
+        pill.innerHTML = icon;
         container.appendChild(pill);
-        
         if (id === 'pc') renderExplorer('root');
     }
-    bringToFront(win);
 }
 
 function closeApp(id) {
@@ -51,135 +38,71 @@ function closeApp(id) {
     openApps.delete(id);
 }
 
-function toggleMin(id) {
-    const win = document.getElementById('win-' + id);
-    const pill = document.getElementById('pill-' + id);
-    if (win.style.display === 'none') {
-        win.style.display = 'flex';
-        pill.classList.add('active');
-        bringToFront(win);
-    } else {
-        win.style.display = 'none';
-        pill.classList.remove('active');
-    }
-}
-
-function bringToFront(win) {
-    document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
-    win.style.zIndex = 1000;
-}
-
-// --- EXPLORER LOGIC (Bug Fixad) ---
 function renderExplorer(path) {
     const view = document.getElementById('explorer-view');
     view.innerHTML = '';
-    document.getElementById('path-display').innerText = "Nanosoft: " + path.toUpperCase();
-    
+    document.getElementById('path-display').innerText = "C:\\" + (path === 'root' ? '' : path);
     const items = fs[path] || fs['root'];
-    
-    if (items.length === 0) {
-        view.innerHTML = '<div style="font-size:0.7rem; color:#555; text-align:center; grid-column: span 3; padding: 20px;">Mappen är tom.</div>';
-        return;
-    }
-
     items.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'start-item'; // Använd startmeny-design för klick-känsla
         div.style.textAlign = 'center';
-        div.style.cursor = 'pointer';
-        div.style.padding = '10px';
-        div.style.borderRadius = '8px';
-
-        div.onclick = (e) => {
-            e.stopPropagation();
-            if (fs[item.target]) {
-                pathHistory.push(item.target);
-                renderExplorer(item.target);
-            } else {
-                alert('Öppnar: ' + item.name);
-            }
+        div.onclick = () => {
+            pathHistory.push(item.target);
+            renderExplorer(item.target);
         };
-        div.innerHTML = `<div style="font-size:2.5rem; margin-bottom:5px;">${item.icon}</div><div style="font-size:0.7rem;">${item.name}</div>`;
+        div.innerHTML = `<div style="font-size:2.5rem;">${item.icon}</div><div style="font-size:0.7rem;">${item.name}</div>`;
         view.appendChild(div);
     });
 }
 
 function goBack() {
     if (pathHistory.length > 1) {
-        pathHistory.pop(); // Ta bort nuvarande path
-        renderExplorer(pathHistory[pathHistory.length - 1]); // Ladda förra
+        pathHistory.pop();
+        renderExplorer(pathHistory[pathHistory.length - 1]);
     }
 }
 
-// --- DRAG LOGIC (Stenhård Fix för Både Mus och Touch) ---
-let activeDraggingWin = null;
+// DRAG LOGIC
+let activeWin = null;
 let offset = { x: 0, y: 0 };
 
 document.querySelectorAll('.win-header').forEach(header => {
-    // Mus
-    header.addEventListener('mousedown', dragStart);
-    // Touch
-    header.addEventListener('touchstart', dragStart, { passive: false });
+    const start = (e) => {
+        activeWin = header.parentElement;
+        const event = e.touches ? e.touches[0] : e;
+        offset.x = event.clientX - activeWin.offsetLeft;
+        offset.y = event.clientY - activeWin.offsetTop;
+        document.addEventListener('mousemove', move);
+        document.addEventListener('touchmove', move, { passive: false });
+    };
+    header.addEventListener('mousedown', start);
+    header.addEventListener('touchstart', start);
 });
 
-function dragStart(e) {
-    if (e.target.closest('.win-controls')) return; // Klicka inte på knappar
-    activeDraggingWin = e.currentTarget.parentElement;
-    bringToFront(activeDraggingWin);
-
-    const pos = getPos(e);
-    const rect = activeDraggingWin.getBoundingClientRect();
+function move(e) {
+    if (!activeWin) return;
+    if (e.type === 'touchmove') e.preventDefault();
+    const event = e.touches ? e.touches[0] : e;
     
-    offset.x = pos.x - rect.left;
-    offset.y = pos.y - rect.top;
+    let x = event.clientX - offset.x;
+    let y = event.clientY - offset.y;
 
-    document.addEventListener('mousemove', dragMove);
-    document.addEventListener('touchmove', dragMove, { passive: false });
-    document.addEventListener('mouseup', dragStop);
-    document.addEventListener('touchend', dragStop);
+    // Begränsa så fönstret inte försvinner
+    x = Math.max(0, Math.min(x, window.innerWidth - activeWin.offsetWidth));
+    y = Math.max(0, Math.min(y, window.innerHeight - 100));
+
+    activeWin.style.left = x + 'px';
+    activeWin.style.top = y + 'px';
 }
 
-function dragMove(e) {
-    if (!activeDraggingWin) return;
-    if (e.type === 'touchmove') e.preventDefault(); // Hindra mobilskroll
-    
-    const pos = getPos(e);
-    activeDraggingWin.style.left = (pos.x - offset.x) + 'px';
-    activeDraggingWin.style.top = (pos.y - offset.y) + 'px';
-}
+document.addEventListener('mouseup', () => activeWin = null);
+document.addEventListener('touchend', () => activeWin = null);
 
-function dragStop() {
-    activeDraggingWin = null;
-    document.removeEventListener('mousemove', dragMove);
-    document.removeEventListener('touchmove', dragMove);
-    document.removeEventListener('mouseup', dragStop);
-    document.removeEventListener('touchend', dragStop);
-}
-
-function getPos(e) {
-    if (e.touches && e.touches.length > 0) {
-        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
-    return { x: e.clientX, y: e.clientY };
-}
-
-// --- MENUS ---
 function toggleStart() {
     document.getElementById('start-menu').classList.toggle('show');
 }
 
-// Stäng startmenyn vid klick utanför
-document.getElementById('desktop').onclick = (e) => {
-    if(e.target.id === 'desktop') {
-        document.querySelectorAll('.win10-menu').forEach(m => m.classList.remove('show'));
-    }
-}
-
-// --- CLOCK ---
 setInterval(() => {
     const d = new Date();
-    const time = d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
-    const date = d.getFullYear() + "-" + (d.getMonth() + 1).toString().padStart(2, '0') + "-" + d.getDate().toString().padStart(2, '0');
-    document.getElementById('clock-time').innerText = time;
-    document.getElementById('clock-date').innerText = date;
+    document.getElementById('clock-time').innerText = d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
 }, 1000);
