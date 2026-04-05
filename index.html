@@ -2,8 +2,8 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nanosoft NS-10 Ultra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nanosoft NS-10 Ultra Mobile</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
 </head>
@@ -17,9 +17,11 @@
         </div>
     </div>
 
-    <div id="win-pc" class="window">
+    <div id="win-pc" class="window" style="left: 20px; top: 40px;" onmousedown="focusWin('win-pc')">
         <div class="win-header" onmousedown="startDrag(event, 'win-pc')">
-            <div class="win-title">💻 Filutforskare</div>
+            <div style="display:flex; align-items:center; gap:5px; font-size:0.75rem;">
+                <span>💻</span> <span>Filutforskare</span>
+            </div>
             <div class="win-controls">
                 <button class="win-dot dot-min" onclick="toggleMin('pc')"></button>
                 <button class="win-dot dot-close" onclick="closeApp('pc')"></button>
@@ -27,42 +29,40 @@
         </div>
         <div class="explorer-nav">
             <button class="nav-btn" onclick="goBack()">⬅ Bakåt</button>
-            <div id="path-display">C:\</div>
+            <div id="path-display" style="font-size: 0.7rem; color: #888;">C:\</div>
         </div>
         <div id="explorer-view" class="explorer-grid"></div>
     </div>
 
     <div id="start-menu" class="win10-menu">
         <div class="menu-sidebar">
-            <div class="side-icon">☰</div>
+            <div class="side-top">
+                <div class="side-icon">☰</div>
+            </div>
             <div class="side-bottom">
                 <div class="side-icon">👤</div>
                 <div class="side-icon">⚙️</div>
                 <div class="side-icon" style="color:#ff5f56">⏻</div>
             </div>
         </div>
-        <div class="menu-apps">
-            <div class="menu-section-title">Nyligen tillagda</div>
-            <div class="menu-app-item">📟 Terminal</div>
-            <div class="menu-app-item">🌐 Webbläsare</div>
-            <div class="menu-app-item">🎨 Paint</div>
-        </div>
-        <div class="menu-tiles">
-            <div class="tile weather-tile">
-                <div class="tile-label">Väder</div>
-                <div class="weather-info">
-                    <span style="font-size:2rem;">☀️</span>
-                    <span style="font-size:1.5rem;">22°</span>
+        <div class="menu-body">
+            <div class="menu-apps">
+                <div class="menu-section-title">A-Z</div>
+                <div class="menu-app-item" onclick="openApp('pc', '💻')">
+                    <span style="font-size: 1.1rem; margin-right: 10px;">📂</span> Dokument
                 </div>
-                <div style="font-size:0.7rem;">Stockholm: Klart</div>
+                <div class="menu-app-item">
+                    <span style="font-size: 1.1rem; margin-right: 10px;">🌐</span> Webbläsare
+                </div>
             </div>
-            <div class="tile news-tile">
-                <div class="tile-label">Nyheter</div>
-                <div style="font-size:0.8rem; font-weight:bold;">NS-10 är Live!</div>
-                <div style="font-size:0.6rem;">Systemet rullar på GitHub.</div>
+            <div class="menu-tiles">
+                <div class="tile weather-tile">
+                    <div style="font-size:1.5rem;">☀️ 22°C</div>
+                    <div style="font-size:0.6rem; opacity: 0.8;">Stockholm: Klart</div>
+                </div>
+                <div class="tile small-tile" style="background:#0078d7">🎬</div>
+                <div class="tile small-tile" style="background:#2ecc71">🎧</div>
             </div>
-            <div class="tile small-tile" style="background:#0078d7">🎬</div>
-            <div class="tile small-tile" style="background:#2ecc71">🎼</div>
         </div>
     </div>
 
@@ -70,8 +70,8 @@
         <div class="start-btn" onclick="toggleStart()">NS</div>
         <div id="active-apps"></div>
         <div class="tray">
-            <div id="clock-time">00:00</div>
-            <div id="clock-date">2026-04-05</div>
+            <div id="clock-time" style="font-weight: 600;">00:00</div>
+            <div id="clock-date" style="opacity: 0.5;">2026-04-05</div>
         </div>
     </div>
 </div>
@@ -79,4 +79,3 @@
 <script src="script.js"></script>
 </body>
 </html>
-
