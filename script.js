@@ -4,15 +4,13 @@ let pathHistory = ['root'];
 const fs = {
     'root': [
         { name: 'System (C:)', icon: '💽', target: 'c' },
-        { name: 'Dokument', icon: '📂', target: 'docs' }
+        { name: 'Mina dokument', icon: '📂', target: 'root' }
     ],
     'c': [
         { name: 'Windows', icon: '📁', target: 'win' },
-        { name: 'Users', icon: '📁', target: 'users' }
+        { name: 'Användare', icon: '📁', target: 'root' }
     ],
-    'docs': [
-        { name: 'hemligt.txt', icon: '📄', target: 'root' }
-    ]
+    'win': [{ name: 'System32', icon: '📁', target: 'root' }]
 };
 
 function openApp(id, icon) {
@@ -21,12 +19,11 @@ function openApp(id, icon) {
     document.getElementById('start-menu').classList.remove('show');
     if (!openApps.has(id)) {
         openApps.add(id);
-        const container = document.getElementById('active-apps');
         const pill = document.createElement('div');
         pill.className = 'app-pill';
         pill.id = 'pill-' + id;
         pill.innerHTML = icon;
-        container.appendChild(pill);
+        document.getElementById('active-apps').appendChild(pill);
         if (id === 'pc') renderExplorer('root');
     }
 }
@@ -41,16 +38,18 @@ function closeApp(id) {
 function renderExplorer(path) {
     const view = document.getElementById('explorer-view');
     view.innerHTML = '';
-    document.getElementById('path-display').innerText = "C:\\" + (path === 'root' ? '' : path);
+    document.getElementById('path-display').value = "C:\\" + (path === 'root' ? '' : path);
+    
     const items = fs[path] || fs['root'];
     items.forEach(item => {
         const div = document.createElement('div');
         div.style.textAlign = 'center';
+        div.style.padding = '5px';
         div.onclick = () => {
             pathHistory.push(item.target);
             renderExplorer(item.target);
         };
-        div.innerHTML = `<div style="font-size:2.5rem;">${item.icon}</div><div style="font-size:0.7rem;">${item.name}</div>`;
+        div.innerHTML = `<div style="font-size:2.5rem;">${item.icon}</div><div style="font-size:0.7rem; background:transparent;">${item.name}</div>`;
         view.appendChild(div);
     });
 }
@@ -62,7 +61,7 @@ function goBack() {
     }
 }
 
-// DRAG LOGIC
+// DRAG LOGIC (Fast och direkt, ingen mjukhet)
 let activeWin = null;
 let offset = { x: 0, y: 0 };
 
@@ -87,9 +86,9 @@ function move(e) {
     let x = event.clientX - offset.x;
     let y = event.clientY - offset.y;
 
-    // Begränsa så fönstret inte försvinner
+    // Lås fönstret inom skärmen
     x = Math.max(0, Math.min(x, window.innerWidth - activeWin.offsetWidth));
-    y = Math.max(0, Math.min(y, window.innerHeight - 100));
+    y = Math.max(0, Math.min(y, window.innerHeight - 35));
 
     activeWin.style.left = x + 'px';
     activeWin.style.top = y + 'px';
@@ -98,9 +97,21 @@ function move(e) {
 document.addEventListener('mouseup', () => activeWin = null);
 document.addEventListener('touchend', () => activeWin = null);
 
+function toggleMin(id) {
+    const win = document.getElementById('win-' + id);
+    win.style.display = win.style.display === 'none' ? 'flex' : 'none';
+}
+
 function toggleStart() {
     document.getElementById('start-menu').classList.toggle('show');
 }
+
+// Stäng startmeny vid klick utanför
+document.addEventListener('click', (e) => {
+    if(!e.target.closest('#start-btn') && !e.target.closest('#start-menu')) {
+        document.getElementById('start-menu').classList.remove('show');
+    }
+});
 
 setInterval(() => {
     const d = new Date();
