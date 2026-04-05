@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nanosoft NS-10 Pro</title>
+    <title>Nanosoft NS-10 Ultra</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
 </head>
@@ -15,14 +15,10 @@
             <div class="d-visual">💻</div>
             <span>Den här datorn</span>
         </div>
-        <div class="d-icon" onclick="openApp('term', '📟')">
-            <div class="d-visual">📟</div>
-            <span>Terminal</span>
-        </div>
     </div>
 
-    <div id="win-pc" class="window" style="left: 50px; top: 50px;">
-        <div class="win-header">
+    <div id="win-pc" class="window">
+        <div class="win-header" onmousedown="startDrag(event, 'win-pc')">
             <div class="win-title">💻 Filutforskare</div>
             <div class="win-controls">
                 <button class="win-dot dot-min" onclick="toggleMin('pc')"></button>
@@ -30,49 +26,52 @@
             </div>
         </div>
         <div class="explorer-nav">
-            <button onclick="renderExplorer('root')">🏠 Hem</button>
+            <button class="nav-btn" onclick="goBack()">⬅ Bakåt</button>
             <div id="path-display">C:\</div>
         </div>
         <div id="explorer-view" class="explorer-grid"></div>
     </div>
 
-    <div id="win-term" class="window" style="left: 100px; top: 100px; width: 600px; height: 400px;">
-        <div class="win-header">
-            <div class="win-title">📟 Nanosoft Terminal</div>
-            <div class="win-controls">
-                <button class="win-dot dot-min" onclick="toggleMin('term')"></button>
-                <button class="win-dot dot-close" onclick="closeApp('term')"></button>
+    <div id="start-menu" class="win10-menu">
+        <div class="menu-sidebar">
+            <div class="side-icon">☰</div>
+            <div class="side-bottom">
+                <div class="side-icon">👤</div>
+                <div class="side-icon">⚙️</div>
+                <div class="side-icon" style="color:#ff5f56">⏻</div>
             </div>
         </div>
-        <div class="terminal-body" id="term-body">
-            <div class="term-line">Nanosoft NS-10 [Version 10.0.19044]</div>
-            <div class="term-line">(c) Nanosoft Corporation. Alla rättigheter reserverade.</div>
-            <br>
-            <div id="term-output"></div>
-            <div class="term-input-line">
-                <span>C:\></span><input type="text" id="term-input" autofocus>
+        <div class="menu-apps">
+            <div class="menu-section-title">Nyligen tillagda</div>
+            <div class="menu-app-item">📟 Terminal</div>
+            <div class="menu-app-item">🌐 Webbläsare</div>
+            <div class="menu-app-item">🎨 Paint</div>
+        </div>
+        <div class="menu-tiles">
+            <div class="tile weather-tile">
+                <div class="tile-label">Väder</div>
+                <div class="weather-info">
+                    <span style="font-size:2rem;">☀️</span>
+                    <span style="font-size:1.5rem;">22°</span>
+                </div>
+                <div style="font-size:0.7rem;">Stockholm: Klart</div>
             </div>
+            <div class="tile news-tile">
+                <div class="tile-label">Nyheter</div>
+                <div style="font-size:0.8rem; font-weight:bold;">NS-10 är Live!</div>
+                <div style="font-size:0.6rem;">Systemet rullar på GitHub.</div>
+            </div>
+            <div class="tile small-tile" style="background:#0078d7">🎬</div>
+            <div class="tile small-tile" style="background:#2ecc71">🎼</div>
         </div>
     </div>
 
     <div class="taskbar">
-        <div class="start-btn" onclick="toggleMenu('start-menu')">NS</div>
-        <div class="search-box">
-            <input type="text" placeholder="Sök på Nanosoft...">
-        </div>
+        <div class="start-btn" onclick="toggleStart()">NS</div>
         <div id="active-apps"></div>
         <div class="tray">
             <div id="clock-time">00:00</div>
-            <div id="clock-date">2026-04-04</div>
-        </div>
-    </div>
-
-    <div id="start-menu" class="popup">
-        <div class="start-header">👤 Användare</div>
-        <div class="start-list">
-            <div class="start-item" onclick="openApp('pc', '💻')">📂 Dokument</div>
-            <div class="start-item">⚙️ Inställningar</div>
-            <div class="start-item" style="color: #ff5f56;">🔒 Logga ut</div>
+            <div id="clock-date">2026-04-05</div>
         </div>
     </div>
 </div>
