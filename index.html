@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Nanosoft NS-10 Ultra</title>
+    <title>Nanosoft NS-98</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
-</head>
+    </head>
 <body>
 
 <div id="desktop">
@@ -15,60 +14,68 @@
             <div class="d-visual">💻</div>
             <span>Den här datorn</span>
         </div>
+        <div class="d-icon" onclick="openApp('pc', '📂')">
+            <div class="d-visual">📂</div>
+            <span>Mina dokument</span>
+        </div>
     </div>
 
-    <div id="win-pc" class="window">
+    <div id="win-pc" class="window" style="left: 20px; top: 40px;">
         <div class="win-header">
-            <div class="win-title">💻 Filutforskare</div>
-            <div class="win-controls">
-                <button class="win-dot dot-min" onclick="toggleMin('pc')"></button>
-                <button class="win-dot dot-close" onclick="closeApp('pc')"></button>
+            <div class="win-title">
+                <span class="win-title-icon">💻</span>
+                Den här datorn
             </div>
+            <div class="win-controls">
+                <button class="win-btn" onclick="toggleMin('pc')">_</button>
+                <button class="win-btn" style="font-weight:bold" onclick="closeApp('pc')">X</button>
+            </div>
+        </div>
+        <div class="win-menus">
+            <span><u>A</u>rkiv</span> <span><u>R</u>edigera</span> <span><u>V</u>isa</span> <span><u>H</u>jälp</span>
         </div>
         <div class="explorer-nav">
-            <button class="nav-btn" onclick="goBack()">⬅ Bakåt</button>
-            <div id="path-display">C:\</div>
+            <div class="nav-address">
+                <span>A<u>d</u>ress</span>
+                <input type="text" id="path-display" value="C:\" readonly>
+            </div>
+            <button class="nav-btn-retro" onclick="goBack()">Bakåt</button>
         </div>
-        <div id="explorer-view" class="explorer-grid"></div>
+        <div id="explorer-view" class="explorer-grid-retro"></div>
     </div>
 
-    <div id="start-menu" class="win10-menu">
+    <div id="start-menu" class="win98-menu">
         <div class="menu-sidebar">
-            <div class="side-top"><div class="side-icon">☰</div></div>
-            <div class="side-bottom">
-                <div class="side-icon">👤</div>
-                <div class="side-icon">⚙️</div>
-                <div class="side-icon" style="color:#ff5f56">⏻</div>
-            </div>
+            <div class="sidebar-text">Nanosoft <span>NS-98</span></div>
         </div>
-        <div class="menu-body">
-            <div class="menu-apps">
-                <div class="menu-section-title">A-Z</div>
-                <div class="menu-app-item" onclick="openApp('pc', '💻')">📂 Dokument</div>
-                <div class="menu-app-item">🌐 Webbläsare</div>
-                <div class="menu-app-item">📟 Terminal</div>
+        <div class="menu-list">
+            <div class="menu-item" onclick="openApp('pc', '💻')">
+                <span class="menu-icon">💻</span> <u>D</u>en här datorn...
             </div>
-            <div class="menu-tiles">
-                <div class="tile weather-tile">
-                    <div style="font-size:1.2rem;">☀️ 22°C</div>
-                    <div style="font-size:0.6rem;">Stockholm: Klart</div>
-                    <div class="tile-label">Väder</div>
-                </div>
-                <div class="tile news-tile">
-                    <div style="font-size:0.8rem; font-weight:bold;">NS-10 Live</div>
-                    <div style="font-size:0.6rem;">Systemet rullar på GitHub.</div>
-                    <div class="tile-label">Nyheter</div>
-                </div>
+            <div class="menu-item">
+                <span class="menu-icon">📂</span> <u>P</u>rogram
+            </div>
+            <div class="menu-item">
+                <span class="menu-icon">🌐</span> <u>W</u>ebbläsare
+            </div>
+            <hr class="win98-hr">
+            <div class="menu-item">
+                <span class="menu-icon">⚙️</span> <u>I</u>nställningar
+            </div>
+            <hr class="win98-hr">
+            <div class="menu-item" style="margin-top:auto">
+                <span class="menu-icon">⏻</span> <u>S</u>täng av...
             </div>
         </div>
     </div>
 
     <div class="taskbar">
-        <div class="start-btn" onclick="toggleStart()">NS</div>
+        <div id="start-btn" onclick="toggleStart()">
+            <span class="start-icon">N</span> Start
+        </div>
         <div id="active-apps"></div>
         <div class="tray">
             <div id="clock-time">00:00</div>
-            <div id="clock-date">2026-04-05</div>
         </div>
     </div>
 </div>
