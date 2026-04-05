@@ -1,105 +1,93 @@
 const openApps = new Set();
+let pathHistory = ['root'];
+
 const fs = {
-    'root': [{ name: 'System (C:)', icon: '💽', target: 'c' }, { name: 'Dokument', icon: '📂', target: 'root' }],
-    'c': [{ name: 'Windows', icon: '📁', target: 'root' }, { name: 'Users', icon: '📁', target: 'root' }, { name: 'secret.txt', icon: '📄', target: 'root' }]
+    'root': [
+        { name: 'System (C:)', icon: '💽', target: 'c' },
+        { name: 'Mina Dokument', icon: '📂', target: 'docs' }
+    ],
+    'c': [
+        { name: 'Windows', icon: '📁', target: 'root' },
+        { name: 'Users', icon: '📁', target: 'root' }
+    ],
+    'docs': [
+        { name: 'hemligt.txt', icon: '📄', target: 'root' },
+        { name: 'projekt.exe', icon: '⚙️', target: 'root' }
+    ]
 };
 
-// --- WINDOW LOGIC ---
+// --- WINDOWS ---
 function openApp(id, icon) {
     const win = document.getElementById('win-' + id);
+    win.style.display = 'flex';
     if (!openApps.has(id)) {
-        win.style.display = 'flex';
         openApps.add(id);
-        const pill = document.createElement('div');
-        pill.className = 'app-pill active';
-        pill.id = 'pill-' + id;
-        pill.innerHTML = icon;
-        pill.onclick = () => toggleMin(id);
-        document.getElementById('active-apps').appendChild(pill);
         if (id === 'pc') renderExplorer('root');
     }
-    focusWin(win);
 }
 
 function closeApp(id) {
     document.getElementById('win-' + id).style.display = 'none';
-    document.getElementById('pill-' + id).remove();
     openApps.delete(id);
 }
 
-function toggleMin(id) {
-    const win = document.getElementById('win-' + id);
-    win.style.display = win.style.display === 'none' ? 'flex' : 'none';
-    document.getElementById('pill-' + id).classList.toggle('active');
-}
-
-function focusWin(win) {
-    document.querySelectorAll('.window').forEach(w => w.style.zIndex = 100);
-    win.style.zIndex = 1000;
-}
-
-// --- EXPLORER LOGIC ---
+// --- FILSYSTEM ---
 function renderExplorer(path) {
-    const grid = document.getElementById('explorer-view');
-    grid.innerHTML = '';
+    const view = document.getElementById('explorer-view');
+    view.innerHTML = '';
     document.getElementById('path-display').innerText = "C:\\" + (path === 'root' ? '' : path);
-    (fs[path] || fs['root']).forEach(item => {
+    
+    const items = fs[path] || fs['root'];
+    items.forEach(item => {
         const div = document.createElement('div');
-        div.className = 'start-item';
         div.style.textAlign = 'center';
-        div.onclick = () => renderExplorer(item.target);
-        div.innerHTML = `<div style="font-size:2.5rem">${item.icon}</div><div style="font-size:0.7rem">${item.name}</div>`;
-        grid.appendChild(div);
+        div.style.cursor = 'pointer';
+        div.onclick = () => {
+            pathHistory.push(item.target);
+            renderExplorer(item.target);
+        };
+        div.innerHTML = `<div style="font-size:3rem;">${item.icon}</div><div style="font-size:0.7rem;">${item.name}</div>`;
+        view.appendChild(div);
     });
 }
 
-// --- TERMINAL LOGIC ---
-const termInput = document.getElementById('term-input');
-const termOutput = document.getElementById('term-output');
-
-termInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        const cmd = termInput.value.toLowerCase();
-        const line = document.createElement('div');
-        line.innerHTML = `C:\\> ${termInput.value}`;
-        termOutput.appendChild(line);
-
-        const response = document.createElement('div');
-        if (cmd === 'dir') response.innerText = "Katalog av C:\\\n04/04/2026  12:00    <DIR>  Windows\n04/04/2026  12:00    <DIR>  Users";
-        else if (cmd === 'help') response.innerText = "Tillgängliga kommandon: HELP, DIR, CLS, EXIT, NEOFETCH";
-        else if (cmd === 'neofetch') response.innerText = "OS: Nanosoft NS-10\nKernel: 10.0.19044\nUptime: 2 mins\nShell: ns-sh 1.0";
-        else if (cmd === 'cls') termOutput.innerHTML = '';
-        else response.innerText = `'${cmd}' känns inte igen som ett internt kommando.`;
-        
-        termOutput.appendChild(response);
-        termInput.value = '';
-        document.getElementById('term-body').scrollTop = document.getElementById('term-body').scrollHeight;
+function goBack() {
+    if (pathHistory.length > 1) {
+        pathHistory.pop();
+        renderExplorer(pathHistory[pathHistory.length - 1]);
     }
-});
+}
 
-// --- DRAG LOGIC ---
-document.querySelectorAll('.win-header').forEach(header => {
-    header.onmousedown = (e) => {
-        const win = header.parentElement;
-        focusWin(win);
-        let shiftX = e.clientX - win.getBoundingClientRect().left;
-        let shiftY = e.clientY - win.getBoundingClientRect().top;
+// --- DRAG LOGIC (ROBUST) ---
+let activeWin = null;
+let startPos = { x: 0, y: 0 };
 
-        function moveAt(pageX, pageY) {
-            win.style.left = pageX - shiftX + 'px';
-            win.style.top = pageY - shiftY + 'px';
-        }
+function startDrag(e, id) {
+    activeWin = document.getElementById(id);
+    startPos.x = e.clientX - activeWin.offsetLeft;
+    startPos.y = e.clientY - activeWin.offsetTop;
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDrag);
+}
 
-        function onMouseMove(e) { moveAt(e.pageX, e.pageY); }
-        document.addEventListener('mousemove', onMouseMove);
-        document.onmouseup = () => document.removeEventListener('mousemove', onMouseMove);
-    };
-});
+function drag(e) {
+    if (!activeWin) return;
+    activeWin.style.left = (e.clientX - startPos.x) + 'px';
+    activeWin.style.top = (e.clientY - startPos.y) + 'px';
+}
 
-function toggleMenu(id) { document.getElementById(id).classList.toggle('show'); }
+function stopDrag() {
+    activeWin = null;
+    document.removeEventListener('mousemove', drag);
+}
 
+// --- STARTMENY ---
+function toggleStart() {
+    document.getElementById('start-menu').classList.toggle('show');
+}
+
+// --- CLOCK ---
 setInterval(() => {
-    const now = new Date();
-    document.getElementById('clock-time').innerText = now.toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'});
+    const d = new Date();
+    document.getElementById('clock-time').innerText = d.toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'});
 }, 1000);
-
