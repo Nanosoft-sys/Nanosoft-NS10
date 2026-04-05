@@ -2,80 +2,64 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nanosoft NS-98</title>
     <link rel="stylesheet" href="style.css">
-    </head>
-<body>
+</head>
+<body class="win98-body">
 
 <div id="desktop">
-    <div class="desktop-layer">
-        <div class="d-icon" onclick="openApp('pc', '💻')">
-            <div class="d-visual">💻</div>
-            <span>Den här datorn</span>
+    <div class="desktop-icons">
+        <div class="icon" onclick="openApp('pc', '💻')">
+            <div class="img">💻</div>
+            <div class="txt">Den här datorn</div>
         </div>
-        <div class="d-icon" onclick="openApp('pc', '📂')">
-            <div class="d-visual">📂</div>
-            <span>Mina dokument</span>
+        <div class="icon">
+            <div class="img">📂</div>
+            <div class="txt">Mina dokument</div>
         </div>
-    </div>
-
-    <div id="win-pc" class="window" style="left: 20px; top: 40px;">
-        <div class="win-header">
-            <div class="win-title">
-                <span class="win-title-icon">💻</span>
-                Den här datorn
-            </div>
-            <div class="win-controls">
-                <button class="win-btn" onclick="toggleMin('pc')">_</button>
-                <button class="win-btn" style="font-weight:bold" onclick="closeApp('pc')">X</button>
-            </div>
-        </div>
-        <div class="win-menus">
-            <span><u>A</u>rkiv</span> <span><u>R</u>edigera</span> <span><u>V</u>isa</span> <span><u>H</u>jälp</span>
-        </div>
-        <div class="explorer-nav">
-            <div class="nav-address">
-                <span>A<u>d</u>ress</span>
-                <input type="text" id="path-display" value="C:\" readonly>
-            </div>
-            <button class="nav-btn-retro" onclick="goBack()">Bakåt</button>
-        </div>
-        <div id="explorer-view" class="explorer-grid-retro"></div>
-    </div>
-
-    <div id="start-menu" class="win98-menu">
-        <div class="menu-sidebar">
-            <div class="sidebar-text">Nanosoft <span>NS-98</span></div>
-        </div>
-        <div class="menu-list">
-            <div class="menu-item" onclick="openApp('pc', '💻')">
-                <span class="menu-icon">💻</span> <u>D</u>en här datorn...
-            </div>
-            <div class="menu-item">
-                <span class="menu-icon">📂</span> <u>P</u>rogram
-            </div>
-            <div class="menu-item">
-                <span class="menu-icon">🌐</span> <u>W</u>ebbläsare
-            </div>
-            <hr class="win98-hr">
-            <div class="menu-item">
-                <span class="menu-icon">⚙️</span> <u>I</u>nställningar
-            </div>
-            <hr class="win98-hr">
-            <div class="menu-item" style="margin-top:auto">
-                <span class="menu-icon">⏻</span> <u>S</u>täng av...
-            </div>
+        <div class="icon">
+            <div class="img">🗑️</div>
+            <div class="txt">Papperskorgen</div>
         </div>
     </div>
 
-    <div class="taskbar">
-        <div id="start-btn" onclick="toggleStart()">
-            <span class="start-icon">N</span> Start
+    <div id="win-pc" class="window-98">
+        <div class="title-bar">
+            <div class="title-bar-text">💻 Den här datorn</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize" onclick="toggleMin('pc')">_</button>
+                <button aria-label="Close" onclick="closeApp('pc')">X</button>
+            </div>
         </div>
-        <div id="active-apps"></div>
-        <div class="tray">
-            <div id="clock-time">00:00</div>
+        <div class="window-menu">
+            <span><u>A</u>rkiv</span><span><u>R</u>edigera</span><span><u>V</u>isa</span><span><u>H</u>jälp</span>
+        </div>
+        <div class="window-content">
+            <div id="explorer-view" class="explorer-inner"></div>
+        </div>
+    </div>
+
+    <div id="start-menu" class="start-menu-98">
+        <div class="sidebar">
+            <div class="sidebar-vertical"><b>Nanosoft</b> 98</div>
+        </div>
+        <div class="menu-options">
+            <div class="option" onclick="openApp('pc', '💻')"><span>💻</span> <u>D</u>en här datorn</div>
+            <div class="option"><span>📂</span> <u>P</u>rogram</div>
+            <div class="option"><span>⚙️</span> <u>I</u>nställningar</div>
+            <hr>
+            <div class="option"><span>⏻</span> <u>S</u>täng av...</div>
+        </div>
+    </div>
+
+    <div class="taskbar-98">
+        <button id="start-btn" onclick="toggleStart()">
+            <span class="start-logo">N</span> Start
+        </button>
+        <div id="active-apps" class="task-buttons"></div>
+        <div class="status-tray">
+            <div id="clock">00:00</div>
         </div>
     </div>
 </div>
